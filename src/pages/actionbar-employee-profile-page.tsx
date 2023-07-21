@@ -14,7 +14,7 @@ export default function ActionBarEmployeeProfilePage() {
             <div></div>
             <div><h1 className="font-semibold text-xl text-center">Employee Management</h1>
               <button className="px-4 py-3 tracking-wide text-white text-sm font-semibold transition-colors transform bg-gray-700 rounded hover:bg-gray-500 focus:outline-none focus:bg-gray-500" >
-               <Link href="/register"> + Create Member</Link>
+               <Link href="/createMember"> + Create Member</Link>
               </button></div>
             <div></div>
           </div>

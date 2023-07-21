@@ -1,6 +1,6 @@
-// import { type NextPage } from "next";
-import { type FormEventHandler, useState } from "react";
+import { FormEventHandler, useState } from "react";
 import { trpc } from "../utils/trpc";
+
 
 
 interface Document {
@@ -9,18 +9,17 @@ interface Document {
   description: string;
 }
 
-const formDocument = ({ document }: { document: Document }) => {
+const FormDocument = ({ document }: { document: Document }) => {
   const util = trpc.useContext();
-  // const [input, setInput] = useState(document.nameDocument , document.description);
   const [namedocument, setNameDocument] = useState(document.namedocument);
   const [description, setDescription] = useState(document.description);
   const [isEditing, setIsEditing] = useState(false);
-  const deleteformDocument = trpc.document.delete.useMutation({
+  const deleteFormDocument = trpc.document.delete.useMutation({
     onSuccess() {
       util.document.invalidate();
     },
   });
-  const updateformDocument = trpc.document.update.useMutation({
+  const updateFormDocument = trpc.document.update.useMutation({
     async onSuccess() {
       await util.document.invalidate();
       setIsEditing(false);
@@ -29,132 +28,76 @@ const formDocument = ({ document }: { document: Document }) => {
 
   const handleUpdate: FormEventHandler<HTMLFormElement> = async (e) => {
     e.preventDefault();
-    await updateformDocument.mutateAsync({ 
-      id: document.id, 
-      document: { namedocument, description} });
+    await updateFormDocument.mutateAsync({
+      id: document.id,
+      document: {
+        namedocument: namedocument,
+        description: description,
+      },
+    });
   };
-
   const handleDelete = async () => {
-    await deleteformDocument.mutateAsync({ id: document.id });
+    await deleteFormDocument.mutateAsync({ id: document.id });
   };
 
-//   return (
-//     <li className="relative flex items-center justify-between border-b px-2 py-6">
-//       <div>
-//           (isEditing) 
-//           <form onSubmit={handleUpdate} className="inline-block">
-//             <input
-//               type="text"
-//               value={namedocument}
-//               onChange={(e) => setNameDocument(e.target.value)}
-//               className="border-grey-600 w-full rounded border px-2 py-1 outline-none"
-//             />
-//             <input
-//               type="text"
-//               value={description}
-//               onChange={(e) => setDescription(e.target.value)}
-//               className="border-grey-600 w-full rounded border px-2 py-1 outline-none"
-//             />
-            
-//           </form>
-//           <div className="absolute right-0 flex items-center space-x-2">
-//         <button onClick={() => setIsEditing(!isEditing)}>
-//           <svg
-//             xmlns="http://www.w3.org/2000/svg"
-//             className="h-5 w-5 text-blue-600"
-//             fill="none"
-//             viewBox="0 0 24 24"
-//             stroke="currentColor"
-//             strokeWidth="2"
-//           >
-//             <path
-//               strokeLinecap="round"
-//               strokeLinejoin="round"
-//               d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"
-//             />
-//           </svg>
-//         </button>
-//           <button onClick={handleDelete}>
-//           <svg
-//             xmlns="http://www.w3.org/2000/svg"
-//             className="h-5 w-5 text-red-700"
-//             fill="none"
-//             viewBox="0 0 24 24"
-//             stroke="currentColor"
-//             strokeWidth="2"
-//           >
-//             <path
-//               strokeLinecap="round"
-//               strokeLinejoin="round"
-//               d="M6 18L18 6M6 6l12 12"
-//             />
-//           </svg>
-//         </button>
-//       </div>
-//       </div>
-//     </li>
-//   );
-// };
-
-// export default formDocument;
-
-return (
-  <li className="relative flex items-center justify-between border-b px-2 py-6">
-    <div>
-      {isEditing && <span>(isEditing)</span>}
-      <form onSubmit={handleUpdate} className="inline-block">
+  return (
+    <form onSubmit={handleUpdate} className="space-y-4">
+      <div className="space-y-2">
+        <label className="block font-medium">Document Name</label>
         <input
           type="text"
-          value={nameDocument}
+          value={namedocument}
           onChange={(e) => setNameDocument(e.target.value)}
-          className="border-grey-600 w-full rounded border px-2 py-1 outline-none"
+          className="w-full border border-gray-300 rounded-md px-4 py-2"
         />
-        <input
-          type="text"
+      </div>
+      <div className="space-y-2">
+        <label className="block font-medium">Description</label>
+        <textarea
           value={description}
           onChange={(e) => setDescription(e.target.value)}
-          className="border-grey-600 w-full rounded border px-2 py-1 outline-none"
+          className="w-full border border-gray-300 rounded-md px-4 py-2"
         />
-      </form>
-      <div className="absolute right-0 flex items-center space-x-2">
-        <button onClick={() => setIsEditing(!isEditing)}>
-          <svg
-            xmlns="http://www.w3.org/2000/svg"
-            className="h-5 w-5 text-blue-600"
-            fill="none"
-            viewBox="0 0 24 24"
-            stroke="currentColor"
-            strokeWidth="2"
-          >
-            {/* <!-- SVG path goes here --> */}
-            <path
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"
-            />
-          </svg>
-        </button>
-        <button onClick={handleDelete}>
-          <svg
-            xmlns="http://www.w3.org/2000/svg"
-            className="h-5 w-5 text-red-700"
-            fill="none"
-            viewBox="0 0 24 24"
-            stroke="currentColor"
-            strokeWidth="2"
-          >
-                       
-            <path
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              d="M6 18L18 6M6 6l12 12"
-            />
-          </svg>
-        </button>
       </div>
-    </div>
-  </li>
-);
+      <div className="flex space-x-4">
+        {isEditing ? (
+          <>
+            <button
+              type="submit"
+              className="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded-md"
+            >
+              Save
+            </button>
+            <button
+              type="button"
+              onClick={() => setIsEditing(false)}
+              className="bg-gray-500 hover:bg-gray-600 text-white px-4 py-2 rounded-md"
+            >
+              Cancel
+            </button>
+          </>
+        ) : (
+          <>
+            <button
+              type="button"
+              onClick={() => setIsEditing(true)}
+              className="bg-green-500 hover:bg-green-600 text-white px-4 py-2 rounded-md"
+            >
+              Edit
+            </button>
+            <button
+              type="button"
+              onClick={handleDelete}
+              className="bg-red-500 hover:bg-red-600 text-white px-4 py-2 rounded-md"
+            >
+              Delete
+            </button>
+          </>
+        )}
+      </div>
+    </form>
+  );
 };
 
-export default formDocument;
+export default FormDocument;
+
