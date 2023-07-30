@@ -11,7 +11,6 @@ import { trpc } from "../utils/trpc";
 import { signOut, useSession } from "next-auth/react";
 import { useRouter } from "next/router";
 import {Card } from "../components/ui/card"
-import FormDocument from "../components/form-document";
   
 
 
@@ -52,7 +51,7 @@ export default function DocumentPage(){
           {/* Table for To Dolist */}
           <div className="p-2">
           <ul className="mt-4">
-            {/* {documents.map((document) => (
+            {documents.map((document) => (
             <li key={document.id} className="flex items-center justify-between border-b px-2 py-6">
                 <span className="inline-block text-gray-600">
                   {document.namedocument}
@@ -61,21 +60,9 @@ export default function DocumentPage(){
                   {document.description}
                 </span>
                 </li>  
-            ))} */}
-            {/* {documents.map((document) => (
-            <li key={document.id} className="flex items-center justify-between border-b px-2 py-6">
-            <formDocument document={document} />
-            </li>  
-            ))} */}
-
+            ))}
           </ul>
-          <ul className="list-reset">
-          {documents.map((document) => (
-          <li key={document.id} className="relative flex items-center justify-between border-b px-2 py-6">
-          <FormDocument document={document} />
-          </li>
-          ))}
-          </ul>
+          
 
           </div>
           </Card>

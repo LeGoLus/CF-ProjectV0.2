@@ -9,22 +9,6 @@ import { prisma } from "../../../server/db/client";
 
 export const authOptions: NextAuthOptions = {
   // Include user.id on session
-  // callbacks: {
-  //   jwt({ token, user }) {
-  //     if (user) {
-  //       token.id = user?.id;
-  //     }
-  //     return token;
-  //   },
-  //   session({ session, token, user }) {
-  //     if (user) {
-  //       session.user.id = token.id as string;
-  //       session.user.role = user.role;
-  //     }
-  //     return session;
-  //   },
-  // },
-  // },
   callbacks: {
     jwt({ token, user }) {
       if (user) {
@@ -32,34 +16,14 @@ export const authOptions: NextAuthOptions = {
       }
       return token;
     },
-    async session({ session, token, user }) {
-      if (user) {
-        session.user = {
-          ...session.user,
-          id: token.id as string,
-        };
-    
-        // Fetch the user's role from the database
-        const userWithRole = await prisma.user.findUnique({
-          where: { id: user.id },
-          select: { role: true },
-        });
-    
-        // Set the default role value if userWithRole or role property is not present
-        const defaultRole = 'DEFAULT_ROLE'; // Replace 'DEFAULT_ROLE' with your actual default role value
-    
-        if (userWithRole?.role) {
-          session.user.role = userWithRole.role;
-        } else {
-          session.user.role = defaultRole; 
-        }
+    session({ session, token }) {
+      if (session.user) {
+        session.user.id = token.id as string;
       }
-    
-      console.log(session);
       return session;
-    }
-    
+    },
   },
+  // },
   // Configure one or more authentication providers
   adapter: PrismaAdapter(prisma),
   // debug: true,

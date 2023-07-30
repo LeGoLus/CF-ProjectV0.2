@@ -1,6 +1,6 @@
 import { type NextPage } from "next";
 import Head from "next/head";
-import { useState, type FormEventHandler, use } from "react";
+import { useState, type FormEventHandler } from "react";
 import Task from "../components/task";
 import { trpc } from "../utils/trpc";
 import { signOut, useSession } from "next-auth/react";
@@ -13,11 +13,6 @@ const Todo: NextPage = () => {
   const [task, setTask] = useState("");
   const { data: todos = [] } = trpc.todo.getAll.useQuery();
   const { data: session, status } = useSession();
-  const { data: userRoleData } = trpc.user.getRole.useQuery({
-    email: session?.user?.email, // Assuming email is stored in session
-  });
-  // Extract the userRole from the userRoleData
-  const userRole = userRoleData?.role;
   const createTodo = trpc.todo.create.useMutation({
     onSuccess() {
       util.todo.invalidate();
@@ -37,18 +32,6 @@ const Todo: NextPage = () => {
     router.push("/login");
     return <p>Access denied!</p>;
   }
-  if (status == "authenticated") {
-    if (!userRole) {
-      return <p>Not have user Role</p>;
-    }
-    
-  }
-  //if not have role and session
-  if (!session || !userRole) {
-    return <p>Loading ...</p>;
-  }
-
-
   return (
     <>
       <Head>
@@ -59,8 +42,6 @@ const Todo: NextPage = () => {
       <div className="flex h-screen items-center justify-center">
         <div className="absolute top-4 right-4">
           Welcome {session?.user?.email}
-          <br />
-          Role {userRole}
           <button
             onClick={() => signOut({ callbackUrl: "/login" })}
             className="ml-4 font-semibold text-purple-800 underline underline-offset-2"
@@ -85,31 +66,11 @@ const Todo: NextPage = () => {
               className="border-grey-600 w-full rounded border px-2 py-3 outline-none"
             />
           </form>
-          {/* {userRole === "ADMIN" && (
-          <div>
-            <Link href="/home-page">Homepage</Link>
-          </div>
-        )}
-
-        {userRole === "MANAGER" && (
-          <div>
-            <Link href="/dashboard-page"></Link>
-          </div>
-        )}
-
-        {userRole !== "ADMIN" && userRole !== "MANAGER" && (
-          <div>
-            <Link href="/"></Link>
-          </div>
-         )} */}
           <ul className="list-reset">
             {todos.map((todo) => (
               <Task key={todo.id} todo={todo} />
             ))}
           </ul>
-          <div className="mt-8 flex items-center justify-between">
-          <Link href="/home-page">Homepage</Link>
-          </div>
           <div className="mt-8 flex items-center justify-between">
           <Link href="/createDocument">Create Document</Link>
           </div>
@@ -120,8 +81,6 @@ const Todo: NextPage = () => {
           <Link href="/home-page">Access to HomePage</Link>
           </div>
 
-
-          
 
 
         </div>

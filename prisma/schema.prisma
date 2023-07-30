@@ -1,3 +1,6 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
 generator client {
   provider = "prisma-client-js"
 }
@@ -18,6 +21,7 @@ model Todo {
   user      User     @relation(fields: [userId], references: [id])
 }
 
+// Necessary for Next auth
 model Account {
   id                String  @id @default(uuid())
   userId            String
@@ -45,36 +49,17 @@ model Session {
 }
 
 model User {
-  id            String    @id @default(uuid())
-  username      String?
-  firstname     String?
-  nickname      String?
-  lastname      String?
-  email         String?   @unique
+  id            String     @id @default(uuid())
+  name          String?
+  email         String?    @unique
   password      String?
   emailVerified DateTime?
   image         String?
-  job_role      Role      @default(USER)
   accounts      Account[]
   sessions      Session[]
   todo          Todo[]
-  createdAt     DateTime  @default(now())
-
-  gender       Gender?
-  position     String?
-  job_type     Job_Type
-  phone_number String?
-  // skill     Skill[]
-  user_skills  UserSkill[]
-  user_picture String?
-
-  project   Project @relation(fields: [projectId], references: [id])
-  projectId String
-
-  documents UserDocument[]
-
-  //todo_list_id
-  todo_lists Todo_List[]
+  documents     Document[]
+  projects      Project[]
 }
 
 model VerificationToken {
@@ -85,443 +70,28 @@ model VerificationToken {
   @@unique([identifier, token])
 }
 
+// model Role {
+//   id   String @id @default(cuid())
+//   name String @unique
+//   user User[]
+// }
+
 model Document {
-  id           String   @id @default(uuid())
+  id           String   @id @default(cuid())
   namedocument String
   description  String
   createdAt    DateTime @default(now())
   updatedAt    DateTime @updatedAt
-
-  project   Project @relation(fields: [projectId], references: [id])
-  projectId String
-
-  users UserDocument[]
-}
-
-model Maintenance_Report {
-  m_document_id           String                @id @default(uuid())
-  m_report_date_creation  DateTime
-  m_date_update           DateTime              @updatedAt
-  m_document_type         String
-  m_document_color_status Document_Color_Status
-
-  //m_name_report auto from project and maintenance_report generate using code
-  //https://chat.openai.com/share/b677ca95-b613-4ee9-92cd-4077e3b35fd3
-  m_document_name String
-
-  service_charge       Service_Charge
-  guarantee            Guarantee
-  nature_of_work       Nature_of_Work
-  nature_of_work_other String?
-  job_description      String?
-  createdAt            DateTime       @default(now())
-
-  //projectId
-  Project                Project                      @relation(fields: [projectId], references: [id])
-  projectId              String
-  //t_document_id one to many
-  test_reports           Test_Report[]
-  //service_report_id one to many
-  Service_Report         Service_Report[]
-  workflow               Workflow[]
-  //System Information id
-  system_information     System_Information[]
-  //Attachment Information id
-  attachment_information Attachment_Information[]
-  //Preparing Items Information id
-  preparing_items        Preparing_Items_Infomation[]
-}
-
-model Test_Report {
-  t_document_id          String   @id @default(uuid())
-  t_report_creation_date DateTime
-  t_date_update          DateTime @updatedAt
-  t_document_type        String
-
-  //document_name auto from project and test_report generate using code
-  //https://chat.openai.com/share/b677ca95-b613-4ee9-92cd-4077e3b35fd3
-  t_document_name String
-
-  project_blue_print String?
-  createdAt          DateTime @default(now())
-
-  //m_document_id
-  Maintenance_Report              Maintenance_Report @relation(fields: [maintenance_ReportM_document_id], references: [m_document_id])
-  maintenance_ReportM_document_id String
-
-  //list_test_report_id one to many
-  list_test_reports List_Test_Report[]
-}
-
-model Service_Report {
-  s_document_id              String                       @id @default(uuid())
-  s_report_creation_date     DateTime
-  s_date_update              DateTime                     @updatedAt
-  service_by_001             String?
-  service_by_002             String?
-  service_by_003             String?
-  service_by_004             String?
-  timestamp_request          DateTime?                    @default(now())
-  timestamp_start            DateTime?                    @default(now())
-  timestamp_end              DateTime?                    @default(now())
-  results                    Results
-  suggestion                 String?
-  service_fee                Service_Fee
-  customer_satisfaction      Customer_Satisfaction_Rating
-  addtional_customer_comment String?
-  customer_signature         String
-  createdAt                  DateTime                     @default(now())
-
-  //m_document_id
-  Maintenance_Report              Maintenance_Report @relation(fields: [maintenance_ReportM_document_id], references: [m_document_id])
-  maintenance_ReportM_document_id String
-}
-
-model System_Information {
-  m_system_table_id               Int                 @id @default(autoincrement())
-  //count number in code to generate
-  number                          Int
-  system_name                     String
-  system_type                     String
-  system_sub_type                 String
-  createdAt                       DateTime            @default(now())
-  Maintenance_Report              Maintenance_Report? @relation(fields: [maintenance_ReportM_document_id], references: [m_document_id])
-  maintenance_ReportM_document_id String?
-}
-
-model Attachment_Information {
-  m_attachment_table_id           Int                 @id @default(autoincrement())
-  //count number in code to generate
-  number                          Int
-  attachment_name                 Nature_of_Work
-  attachment_file_link            String
-  attchment_creation_date         DateTime            @default(now())
-  createdAt                       DateTime            @default(now())
-  Maintenance_Report              Maintenance_Report? @relation(fields: [maintenance_ReportM_document_id], references: [m_document_id])
-  maintenance_ReportM_document_id String?
-}
-
-model Preparing_Items_Infomation {
-  m_item_table_id                 Int                 @id @default(autoincrement())
-  //count number in code to generate
-  number                          Int
-  item_name                       String
-  item_description                String
-  a_number_of_item                Int
-  createdAt                       DateTime            @default(now())
-  Maintenance_Report              Maintenance_Report? @relation(fields: [maintenance_ReportM_document_id], references: [m_document_id])
-  maintenance_ReportM_document_id String?
-}
-
-model List_Test_Report {
-  test_table_id                   Int         @id @default(autoincrement())
-  item_number                     String?
-  item_type                       String?
-  item_model                      String?
-  item_area                       String?
-  item_picture_link               String?
-  visual_check_status             Item_Status
-  visual_check_before_photo_link  String?
-  visual_check_after_photo_link   String?
-  general_clean_status            Item_Status
-  general_clean_before_photo_link String?
-  general_clean_after_photo_link  String?
-  to_alarm_dev_status             Item_Status
-  to_alarm_dev_before_photo_link  String?
-  to_alarm_dev_after_photo_link   String?
-  activate_test_status            Item_Status
-  activate_test_before_photo_link String?
-  activate_test_after_photo_link  String?
-  trouble_status                  Item_Status
-  trouble_before_photo_link       String?
-  trouble_after_photo_link        String?
-  to_fpc_status                   Item_Status
-  to_fpc_before_photo_link        String?
-  to_fpc_after_photo_link         String?
-  item_remark                     String?
-  item_date                       DateTime    @default(now())
-  createdAt                       DateTime    @default(now())
-
-  //t_document_id link to list_test_report
-  Test_Report              Test_Report @relation(fields: [test_ReportT_document_id], references: [t_document_id])
-  test_ReportT_document_id String
+  userId       String
+  user         User     @relation(fields: [userId], references: [id])
 }
 
 model Project {
-  id               String           @id @default(uuid())
-  name             String
-  status           Project_Status   @default(OPEN)
-  priority         Project_Priority @default(LOW)
-  newflag          Project_New_Flag @default(New)
-  startdate        DateTime
-  enddate          DateTime
-  order            String
-  system           Project_System
-  model            String
-  type             String?
-  size             Project_Size
-  address          String?
-  province         String?
-  region           Region
-  customer_company String
-  customer_name    String?
-  customer_number  String?
-  customer_email   String?
-  customer_fax     String?
-  contract_number  String?
-  purchase_order   String?
-  createdAt        DateTime         @default(now())
-  updatedAt        DateTime         @updatedAt
-
-  documents Document[]
-  users     User[]
-
-  //project_member_id
-  //m_document_id
-  maintenance_reports Maintenance_Report[]
-}
-
-model Workflow {
-  workflow_id            String        @id @default(uuid())
-  workflow_type          Workflow_Type @default(Confirm_Engineer)
-  selected_engineer_user String
-  sale_user              String
-  admin_service_user     String
-  store_user             String
-
-  //pending change to count imcomplete_items_numbers
-  incomplete_items_numbers Int?
-
-  engineer_sign_off           String
-  engineer_sign_off_date      DateTime @default(now())
-  store_sign_off              String
-  store_sign_off_date         DateTime @default(now())
-  admin_service_sign_off      String
-  admin_service_sign_off_date DateTime @default(now())
-  maintenance_date            DateTime
-  number_of_maintenance       Int
-  additional_criteria         String
-  createdAt                   DateTime @default(now())
-
-  //m_document_id
-  Maintenance_Report              Maintenance_Report? @relation(fields: [maintenance_ReportM_document_id], references: [m_document_id])
-  maintenance_ReportM_document_id String?
-}
-
-model Todo_List {
-  todo_id          String      @id @default(uuid())
-  todo_name        String
-  todo_projectname String
-  action_name      Action_Name
-  completed        Boolean     @default(false)
-  created_date     DateTime    @default(now())
-  createdAt        DateTime    @default(now())
-  updatedAt        DateTime    @updatedAt
-  //userId
-  User             User        @relation(fields: [userId], references: [id])
-  userId           String
-}
-
-model UserDocument {
-  user       User     @relation(fields: [userId], references: [id])
-  userId     String
-  document   Document @relation(fields: [documentId], references: [id])
-  documentId String
-
-  @@id([documentId, userId])
-}
-
-model UserSkill {
-  user   User   @relation(fields: [userId], references: [id])
-  userId String
-  skill  Skill
-
-  @@id([skill, userId])
-}
-
-enum Role {
-  ADMIN
-  EXECUTIVE_MANAGER
-  SALE
-  ENGINEER
-  ADMIN_SERVICE
-  STORE
-  TECHNICIAN
-  DUMMY_USER
-  USER
-}
-
-enum Project_Status {
-  OPEN
-  CLOSED
-}
-
-enum Project_Priority {
-  LOW
-  MEDIUM
-  HIGH
-}
-
-enum Project_New_Flag {
-  New
-  Current
-}
-
-enum Region {
-  North
-  South
-  East
-  West
-  Central
-  Northeast
-  BKK
-}
-
-enum Project_System {
-  ACC
-  NC
-  FP
-  CCTV
-  PA
-  FA
-  N2
-  EMS
-  LN
-}
-
-enum Project_Size {
-  S
-  M
-  L
-  XL
-}
-
-enum Project_Member_Type {
-  SALE_MEMBER
-  ENGINEER_LEADER
-  ENGINEER_MEMBER
-  ENGINEER_SUPPORT
-  ADMIN_SERVICE_MEMBER
-}
-
-enum Gender {
-  Male
-  Female
-}
-
-enum Job_Type {
-  Manageement
-  Leader
-  Staff
-}
-
-enum Skill {
-  FireSheild
-  ORION_8
-  ORION_16
-  IO64
-  IO1000
-  EST2
-  EST3
-  Notifier_30303_3064_640
-  Notifier_2002
-  J_Net
-  CCTV_Analog
-  CCTP_IP_Network
-  Access_Control_GE_Inter
-  Access_Control_SOYAL
-  Nurse_Call
-  PA_8500_6500
-  PA_IP
-  FirePro_install
-}
-
-enum Service_Charge {
-  Yes
-  No
-}
-
-enum Guarantee {
-  Yes
-  No
-}
-
-enum Nature_of_Work {
-  Maintenance
-  After_Sales_Service
-  Survey
-  Implement
-  CheckandRepair
-  Stand_by
-  Other
-}
-
-enum Attactment_Name {
-  Quotation
-  Sale_Order
-  Project_Blueprint
-  Spec
-  Check_list
-  Map
-  Implementation_Guide
-  Photos
-  Certification
-  Other
-}
-
-enum Item_Status {
-  Blank
-  Passed
-  Pending
-  Failed
-}
-
-enum Workflow_Type {
-  Confirm_Engineer
-  Review_Document
-  Store_Validation
-  Define_Maintenance_Date
-  Proceed_for_Maintenance
-  Final_Review
-  Completed
-}
-
-enum Results {
-  Completed
-  Follow_up
-}
-
-enum Service_Fee {
-  No_Charge
-  Charge
-}
-
-enum Customer_Satisfaction_Rating {
-  Less
-  Medium
-  Good
-  Very_Good
-}
-
-enum Additional_Criteria {
-  Maintenance_Completed
-  Not_Complete_Maintenance
-  Not_Complete_Maintenance_and_will_provide_a_new_quotation
-  Not_Complete_Maintenance_and_get_products_in_warranty
-  Not_Complete_Maintenance_and_out_of_warranty_products
-}
-
-enum Document_Color_Status {
-  Red
-  Yellow
-  Green
-}
-
-enum Action_Name {
-  Confirm_Engineer
-  Review_Document
-  Validate_and_Prepare_Items
-  Define_Maintenance_Date
-  Proceed_for_Maintenance
-  Final_Review
+  id          String   @id @default(cuid())
+  nameproject String
+  description String
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  userId      String
+  user        User     @relation(fields: [userId], references: [id])
 }

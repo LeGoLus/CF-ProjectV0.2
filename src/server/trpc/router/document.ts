@@ -10,7 +10,6 @@ export const documentRouter = router({
         description: z.string(),
       })
     )
-  
     .mutation(({ ctx, input }) => {
       const { namedocument, description } = input;
       const id = ctx.session.user.id;
