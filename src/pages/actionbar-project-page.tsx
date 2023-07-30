@@ -14,7 +14,7 @@ export default function ActionBarProjectPage() {
             <div></div>
             <div><h1 className="font-semibold text-xl text-center">Welcome!</h1>
               <button className="px-4 py-3 tracking-wide text-white text-sm font-semibold transition-colors transform bg-gray-700 rounded hover:bg-gray-500 focus:outline-none focus:bg-gray-500" >
-               <Link href="/project-creation-page"> + Create Project</Link>
+               <Link href="/createProject"> + Create Project</Link>
               </button></div>
             <div></div>
           </div>
