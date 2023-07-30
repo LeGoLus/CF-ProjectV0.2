@@ -44,4 +44,25 @@ export const userRouter = router({
     return ctx.prisma.user.findMany();
   }
   ),
+  getOne: publicProcedure
+    .input(z.object({ id: z.string() }))
+    .query(({ ctx, input }) => {
+      // return user and role
+      return ctx.prisma.user.findUnique({
+        where: { id: input.id },
+        select: { id: true, email: true, role: true },
+      });
+    }
+    ),
+    //New features get role by email
+    getRole: publicProcedure
+    .input(z.object({ email: z.string() }))
+    .query(({ ctx, input }) => {
+      // return user and role
+      return ctx.prisma.user.findUnique({
+        where: { email: input.email },
+        select: { role: true },
+      });
+    }
+    ),
 });
