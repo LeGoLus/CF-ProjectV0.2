@@ -55,7 +55,7 @@ export default function UserNav() {
         <DropdownMenuSeparator />
         <DropdownMenuItem>
           <LogOut className="mr-2 h-8 w-5" />
-          <Link href="/"><span>Log out</span></Link>
+          <Link href="/login-page"><span>Log out</span></Link>
           
           <DropdownMenuShortcut></DropdownMenuShortcut>
         </DropdownMenuItem>
